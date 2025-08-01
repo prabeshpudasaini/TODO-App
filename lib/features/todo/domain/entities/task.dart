@@ -1,4 +1,4 @@
-enum TaskPriority { high, medium, low }
+import 'package:myapp/core/enums/task_priority.dart';
 
 //Task Entity
 class Task {
