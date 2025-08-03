@@ -8,7 +8,7 @@ class TaskHiveDataSource {
 
   TaskHiveDataSource(this.taskBox);
 
-  List<TaskModel> getTasks() {
+  Future<List<TaskModel>> getTasks() async {
     return taskBox.values.toList();
   }
 

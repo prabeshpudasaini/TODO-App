@@ -1,10 +1,10 @@
 
 import 'package:myapp/features/todo/domain/repositories/task_repo.dart';
 
-class DeleteTask {
+class DeleteTaskUseCase {
   final TaskRepo repo;
 
-  DeleteTask(this.repo);
+  DeleteTaskUseCase(this.repo);
 
   Future<void> call(String id) {
     return repo.deleteTask(id);

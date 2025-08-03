@@ -9,31 +9,31 @@ class TaskRepoImpl implements TaskRepo {
   TaskRepoImpl(this.hiveDataSource);
 
   @override
-  Future<void> addTask(Task newTask) async {
-    final taskModel = TaskModel.fromEntity(newTask);
-    hiveDataSource.addTask(taskModel);
-  }
-
-  @override
-  Future<void> deleteTask(String id) async {
-    hiveDataSource.deleteTask(id);
-  }
-
-  @override
   Future<List<Task>> getTasks() async {
-    final taskModels = hiveDataSource.getTasks();
+    final taskModels = await hiveDataSource.getTasks();
     List<Task> res = taskModels.map((model) => model.toEntity()).toList();
     return res;
   }
 
   @override
-  Future<void> toggleTaskStatus(String id) async {
-    hiveDataSource.toggleTaskStatus(id);
+  Future<void> addTask(Task newTask) async {
+    final taskModel = TaskModel.fromEntity(newTask);
+    return hiveDataSource.addTask(taskModel);
   }
 
   @override
   Future<void> updateTask(Task task) async {
     final taskModel = TaskModel.fromEntity(task);
-    hiveDataSource.updateTask(taskModel);
+    return hiveDataSource.updateTask(taskModel);
+  }
+
+  @override
+  Future<void> deleteTask(String id) async {
+    return hiveDataSource.deleteTask(id);
+  }
+
+  @override
+  Future<void> toggleTaskStatus(String id) async {
+    return hiveDataSource.toggleTaskStatus(id);
   }
 }

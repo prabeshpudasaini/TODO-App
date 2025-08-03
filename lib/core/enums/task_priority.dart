@@ -1,1 +1,1 @@
-enum TaskPriority { high, medium, low }
+enum TaskPriority { low, medium, high }
