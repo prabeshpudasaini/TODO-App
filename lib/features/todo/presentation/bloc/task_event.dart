@@ -28,7 +28,12 @@ class ToggleTaskStatus extends TaskEvent {
   ToggleTaskStatus(this.taskId);
 }
 
-class FilterTasks extends TaskEvent {
-  final String filter; // "all", "active", "completed"
-  FilterTasks(this.filter);
+class ChangeFilterEvent extends TaskEvent {
+  final String filter;
+  ChangeFilterEvent(this.filter);
+}
+
+class ChangeSortEvent extends TaskEvent {
+  final String sortBy;
+  ChangeSortEvent(this.sortBy);
 }

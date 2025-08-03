@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/core/enums/task_priority.dart';
-import 'package:myapp/features/todo/domain/entities/task.dart';
+import 'package:myapp/config/theme/theme_cubit.dart';
+import 'package:myapp/core/constants/strings.dart';
+import 'package:myapp/core/utils/get_tile_color.dart';
+import 'package:myapp/core/utils/get_tile_text_color.dart';
 import 'package:myapp/features/todo/presentation/bloc/task_bloc.dart';
 import 'package:myapp/features/todo/presentation/bloc/task_event.dart';
 import 'package:myapp/features/todo/presentation/bloc/task_state.dart';
@@ -16,66 +18,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _filter = 'All';
-  String _sortBy = 'Due Date';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Tasks'),
+        title: const Text(Strings.myTask),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) => setState(() => _filter = value),
-            itemBuilder:
-                (context) => [
-                  const PopupMenuItem(value: 'All', child: Text('Show All')),
-                  const PopupMenuItem(
-                    value: 'Active',
-                    child: Text('Show Active'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Completed',
-                    child: Text('Show Completed'),
-                  ),
-                ],
-            icon: const Icon(Icons.filter_list),
-            tooltip: 'Filter Tasks',
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) => setState(() => _sortBy = value),
-            itemBuilder:
-                (context) => [
-                  const PopupMenuItem(
-                    value: 'Due Date',
-                    child: Text('Sort by Due Date'),
-                  ),
-                  const PopupMenuItem(
-                    value: 'Priority',
-                    child: Text('Sort by Priority'),
-                  ),
-                ],
-            icon: const Icon(Icons.sort),
-            tooltip: 'Sort Tasks',
-          ),
+          _filterMenuButton(),
+          _sortTaskMenuButton(),
+          _switchThemeButton(),
         ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
-          // if (state is TaskLoading) {
-          //   return const Center(child: CircularProgressIndicator());
-          // } else if (state is TaskLoaded) {
           if (state is TaskLoaded) {
-            final tasks = _applyFilterAndSort(state.tasks!);
+            final tasks = state.visibleTasks;
             if (tasks.isEmpty) {
-              return const Center(child: Text('No tasks yet'));
+              return const Center(child: Text(Strings.noTasksMessage));
             }
 
             return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = tasks[index];
-                final bgColor = _getTileColor(task.priority, context);
+                final bgColor = getTileColor(task.priority, context);
+                final textColor = getTileTextColor(task.priority, context);
 
                 return Dismissible(
                   key: Key(task.id),
@@ -89,12 +56,13 @@ class _HomePageState extends State<HomePage> {
                   onDismissed: (_) {
                     context.read<TaskBloc>().add(DeleteTask(task.id));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Task deleted')),
+                      const SnackBar(content: Text(Strings.taskDeleted)),
                     );
                   },
                   child: Card(
                     color: bgColor,
                     child: ListTile(
+                      textColor: textColor,
                       onTap:
                           () => Navigator.push(
                             context,
@@ -114,6 +82,7 @@ class _HomePageState extends State<HomePage> {
                         task.title,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
+
                           decoration:
                               task.isCompleted
                                   ? TextDecoration.lineThrough
@@ -128,11 +97,17 @@ class _HomePageState extends State<HomePage> {
                       trailing: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.calendar_today, size: 16),
+                          Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: textColor,
+                          ),
                           const SizedBox(height: 4),
                           Text(
                             _formatDate(task.dueDate),
-                            style: Theme.of(context).textTheme.labelSmall,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelSmall?.copyWith(color: textColor),
                           ),
                         ],
                       ),
@@ -142,7 +117,7 @@ class _HomePageState extends State<HomePage> {
               },
             );
           } else {
-            return const Center(child: Text('No Task Yet'));
+            return const Center(child: Text(Strings.noTasksMessage));
           }
         },
       ),
@@ -153,40 +128,68 @@ class _HomePageState extends State<HomePage> {
               MaterialPageRoute(builder: (_) => const AddTaskPage()),
             ),
         icon: const Icon(Icons.add),
-        label: const Text('New Task'),
+        label: const Text(Strings.addTaskTooltip),
       ),
     );
   }
 
-  List<Task> _applyFilterAndSort(List<Task> tasks) {
-    List<Task> filtered = switch (_filter) {
-      'Active' => tasks.where((t) => !t.isCompleted).toList(),
-      'Completed' => tasks.where((t) => t.isCompleted).toList(),
-      _ => tasks,
-    };
+  // Theme Toggle Button
+  BlocBuilder<ThemeCubit, ThemeMode> _switchThemeButton() {
+    return BlocBuilder<ThemeCubit, ThemeMode>(
+      builder: (context, themeMode) {
+        return IconButton(
+          icon: Icon(
+            themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+          ),
+          tooltip: Strings.switchThemeTooltip,
+          onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+        );
+      },
+    );
+  }
 
-    switch (_sortBy) {
-      case 'Priority':
-        filtered.sort((a, b) => b.priority.index.compareTo(a.priority.index));
-        break;
-      case 'Due Date':
-      default:
-        filtered.sort((a, b) => a.dueDate.compareTo(b.dueDate));
-    }
+  //Menu Button for Filter
+  PopupMenuButton<String> _sortTaskMenuButton() {
+    return PopupMenuButton<String>(
+      onSelected:
+          (value) => context.read<TaskBloc>().add(ChangeSortEvent(value)),
+      itemBuilder:
+          (context) => [
+            const PopupMenuItem(
+              value: 'Due Date',
+              child: Text(Strings.sortDueDate),
+            ),
+            const PopupMenuItem(
+              value: 'Priority',
+              child: Text(Strings.sortPriority),
+            ),
+          ],
+      icon: const Icon(Icons.sort),
+      tooltip: Strings.sortTooltip,
+    );
+  }
 
-    return filtered;
+  //Menu Button for Filter
+  PopupMenuButton<String> _filterMenuButton() {
+    return PopupMenuButton<String>(
+      onSelected:
+          (value) => context.read<TaskBloc>().add(ChangeFilterEvent(value)),
+      itemBuilder:
+          (context) => [
+            const PopupMenuItem(value: 'All', child: Text(Strings.showAll)),
+            const PopupMenuItem(
+              value: 'Active',
+              child: Text(Strings.showActive),
+            ),
+            const PopupMenuItem(
+              value: 'Completed',
+              child: Text(Strings.showCompleted),
+            ),
+          ],
+      icon: const Icon(Icons.filter_list),
+      tooltip: Strings.filterTooltip,
+    );
   }
 
   String _formatDate(DateTime date) => '${date.day}/${date.month}/${date.year}';
-
-  Color _getTileColor(TaskPriority priority, BuildContext context) {
-    switch (priority) {
-      case TaskPriority.high:
-        return Colors.red.shade50;
-      case TaskPriority.medium:
-        return Colors.orange.shade50;
-      case TaskPriority.low:
-        return Colors.green.shade50;
-    }
-  }
 }

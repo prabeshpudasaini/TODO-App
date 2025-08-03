@@ -4,10 +4,6 @@ abstract class TaskState {
   final List<Task>? tasks;
 
   const TaskState({this.tasks});
-
-  // //Is used to checks if two states are equal or not
-  // @override
-  // List<Object?> get props => [tasks!];
 }
 
 class TaskLoading extends TaskState {
@@ -15,7 +11,31 @@ class TaskLoading extends TaskState {
 }
 
 class TaskLoaded extends TaskState {
-  const TaskLoaded(List<Task> task) : super(tasks: task);
+  final List<Task> allTasks;
+  final List<Task> visibleTasks;
+  final String filter; // 'All', 'Active', 'Completed'
+  final String sortBy; // 'Due Date', 'Priority'
+
+  TaskLoaded({
+    required this.allTasks,
+    required this.visibleTasks,
+    required this.filter,
+    required this.sortBy,
+  });
+
+  TaskLoaded copyWith({
+    List<Task>? allTasks,
+    List<Task>? visibleTasks,
+    String? filter,
+    String? sortBy,
+  }) {
+    return TaskLoaded(
+      allTasks: allTasks ?? this.allTasks,
+      visibleTasks: visibleTasks ?? this.visibleTasks,
+      filter: filter ?? this.filter,
+      sortBy: sortBy ?? this.sortBy,
+    );
+  }
 }
 
 class TaskLoadError extends TaskState {

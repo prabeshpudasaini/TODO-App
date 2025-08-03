@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/config/theme/theme.dart';
+import 'package:myapp/config/theme/theme_cubit.dart';
+import 'package:myapp/config/theme/theme_mode_adapter.dart';
+import 'package:myapp/core/constants/strings.dart';
 import 'package:myapp/features/todo/data/data_sources/task_hive_data_source.dart';
 import 'package:myapp/features/todo/data/models/task_model.dart';
 import 'package:myapp/features/todo/data/repositories/task_repo_impl.dart';
@@ -22,6 +25,8 @@ void main() async {
   await Hive.initFlutter((await getApplicationDocumentsDirectory()).path);
   Hive.registerAdapter(TaskModelAdapter());
   final taskBox = await Hive.openBox<TaskModel>('tasks');
+  Hive.registerAdapter(ThemeModeAdapter());
+  final settingsBox = await Hive.openBox('settings');
 
   // Create data layer
   final dataSource = TaskHiveDataSource(taskBox);
@@ -41,6 +46,7 @@ void main() async {
       updateTask: updateTask,
       deleteTask: deleteTask,
       toggleTaskStatus: toggleTaskStatus,
+      settingsBox: settingsBox,
     ),
   );
 }
@@ -51,6 +57,7 @@ class MyApp extends StatelessWidget {
   final UpdateTaskUseCase updateTask;
   final DeleteTaskUseCase deleteTask;
   final ToggleTaskStatusUseCase toggleTaskStatus;
+  final Box settingsBox;
 
   const MyApp({
     super.key,
@@ -59,25 +66,35 @@ class MyApp extends StatelessWidget {
     required this.updateTask,
     required this.deleteTask,
     required this.toggleTaskStatus,
+    required this.settingsBox,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (_) => TaskBloc(
-            getTasks,
-            addTask,
-            updateTask,
-            deleteTask,
-            toggleTaskStatus,
-          )..add(GetTasks()),
-      child: MaterialApp(
-        title: 'TODO App',
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        home: HomePage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (_) => TaskBloc(
+                getTasks,
+                addTask,
+                updateTask,
+                deleteTask,
+                toggleTaskStatus,
+              )..add(GetTasks()),
+        ),
+        BlocProvider(create: (_) => ThemeCubit(settingsBox)),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, themeMode) {
+          return MaterialApp(
+            title: Strings.appTitle,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeMode,
+            home: HomePage(),
+          );
+        },
       ),
     );
   }

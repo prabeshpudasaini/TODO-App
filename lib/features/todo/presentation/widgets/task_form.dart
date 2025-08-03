@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/core/constants/strings.dart';
 import 'package:myapp/core/enums/task_priority.dart';
 import 'package:myapp/features/todo/domain/entities/task.dart';
 
@@ -79,18 +80,18 @@ class _TaskFormState extends State<TaskForm> {
           TextFormField(
             controller: _titleController,
             decoration: const InputDecoration(
-              labelText: 'Title',
+              labelText: Strings.titleLabel,
               prefixIcon: Icon(Icons.title),
             ),
             validator:
                 (value) =>
-                    value == null || value.isEmpty ? 'Enter a title' : null,
+                    value == null || value.isEmpty ? Strings.titleHint : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _descriptionController,
             decoration: const InputDecoration(
-              labelText: 'Description',
+              labelText: Strings.descriptionLabel,
               prefixIcon: Icon(Icons.description),
             ),
             maxLines: 2,
@@ -99,7 +100,7 @@ class _TaskFormState extends State<TaskForm> {
           DropdownButtonFormField<TaskPriority>(
             value: _priority,
             decoration: const InputDecoration(
-              labelText: 'Priority',
+              labelText: Strings.priorityLabel,
               prefixIcon: Icon(Icons.flag),
             ),
             items:

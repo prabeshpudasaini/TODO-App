@@ -1,41 +1,65 @@
-import 'package:myapp/core/enums/task_priority.dart';
-import 'package:myapp/features/todo/domain/entities/task.dart';
-
 class Strings {
-  static const String mainTitle = "My Tasks";
-  static const String deletedTask = "This task was deleted";
-  static const String doneAllTask = "You Have Done All Tasks!";
-  static const String addNewTask = "Add New ";
-  static const String updateCurrentTask = "Update ";
-  static const String taskString = "Task";
-  static const String titleOfTitleTextField = "What are you planing?";
-  static const String addNote = 'Add Note';
-  static const String timeString = "Time";
-  static const String dateString = "Date";
-  static const String deleteTask = "Delete Task";
-  static const String addTaskString = "Add Task";
-  static const String updateTaskString = "Update Task";
-  static const String oopsMsg = "Oops!";
-  static const String areYouSure = "Are You Sure?";
-}
+  // App info
+  static const appTitle = 'Todo App';
 
-final List<Task> task = [
-  Task(
-    id: "1",
-    title: "Dart",
-    description: "Dart is an Programming Language",
-    createdAt: DateTime.now(),
-    dueDate: DateTime.now(),
-    isCompleted: false,
-    priority: TaskPriority.low,
-  ),
-  Task(
-    id: "1",
-    title: "Dart",
-    description: "Dart is an Programming Language",
-    createdAt: DateTime.now(),
-    dueDate: DateTime.now(),
-    isCompleted: false,
-    priority: TaskPriority.low,
-  ),
-];
+  // Home Page
+  static const noTasksMessage = 'No tasks yet';
+  static const addTaskTooltip = 'Add Task';
+  static const switchThemeTooltip = 'Switch Theme';
+  static const myTask = 'My Task';
+
+  // Task filters
+  static const filterAll = 'All';
+  static const filterActive = 'Active';
+  static const filterCompleted = 'Completed';
+  static const filterTooltip = 'Filter Tasks';
+
+
+  // Task sorting
+  static const sortByDueDate = 'Due Date';
+  static const sortByPriority = 'Priority';
+  static const sortTooltip = 'Sort Tasks';
+
+
+
+  // Popup Menu
+  static const showAll = 'Show All';
+  static const showActive = 'Show Active';
+  static const showCompleted = 'Show Completed';
+  static const sortDueDate = 'Sort by Due Date';
+  static const sortPriority = 'Sort by Priority';
+
+  // Task Form
+  static const addTask = 'Add Task';
+  static const editTask = 'Edit Task';
+  static const save = 'Save';
+  static const update = 'Update';
+
+  static const titleLabel = 'Title';
+  static const titleHint = 'Enter task title';
+
+  static const descriptionLabel = 'Description';
+  static const descriptionHint = 'Enter task description';
+
+  static const dueDateLabel = 'Due Date';
+
+  static const priorityLabel = 'Priority';
+  static const priorityLow = 'Low';
+  static const priorityMedium = 'Medium';
+  static const priorityHigh = 'High';
+
+  // Validation
+  static const titleRequired = 'Title is required';
+
+  // Snackbar messages
+  static const taskAdded = 'Task added successfully';
+  static const taskUpdated = 'Task updated successfully';
+  static const taskDeleted = 'Task deleted';
+  static const taskMarkedCompleted = 'Task marked as completed';
+  static const taskMarkedIncomplete = 'Task marked as incomplete';
+
+  // Buttons
+  static const cancel = 'Cancel';
+  static const delete = 'Delete';
+  static const confirm = 'Confirm';
+}

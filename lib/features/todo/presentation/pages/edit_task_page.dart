@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/core/constants/strings.dart';
 import 'package:myapp/features/todo/domain/entities/task.dart';
 import 'package:myapp/features/todo/presentation/bloc/task_bloc.dart';
 import 'package:myapp/features/todo/presentation/bloc/task_event.dart';
@@ -12,7 +13,7 @@ class EditTaskPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Task')),
+      appBar: AppBar(title: const Text(Strings.editTask)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: TaskForm(
