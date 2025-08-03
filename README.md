@@ -36,7 +36,7 @@ This app was created for ebPerals' Flutter Assignment.
 
 
 **Other Components Used**
-* (Check [`pubspec.yaml`](https://github.com/prabeshpudasaini/TODO-App/blob/main/pubspec.yaml) for more)
+* (Check [`pubspec.yaml`](https://github.com/prabeshpudasaini/TODO-App/blob/master/pubspec.yaml) for more)
 
 
 ## Installation
